@@ -31,9 +31,9 @@ For assignment submission, please knit your final Rmd file into a Word document,
 
 ## Name and UID
 
-Name: [Input here]
+Name: Li Hanwen
 
-UID: [Input here]
+UID: 3035719519
 
 ---
 
@@ -59,7 +59,7 @@ head(murders, 2)
 ### 1. (1 points) Given matrix `mat`, print the entries of row 2, and columns 2 to 4.
 
 ```{r}
-
+# mat[2, 2:4]
 
 ```
 
@@ -67,7 +67,10 @@ head(murders, 2)
 ### 2. (2 points) Write a function `compute_s_n`  that for any given n, computes the $S_n = n*\sqrt{(n+9)}*log_{10}(n)$. Print the $S_n$ with $n = 500$.
 
 ```{r}
-
+compute_s_n <- function(n){
+  n * sqrt(n+9) * log10(n)
+}
+print(compute_s_n(500))
 
 ```   
 
