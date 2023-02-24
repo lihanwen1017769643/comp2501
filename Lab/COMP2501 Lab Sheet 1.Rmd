@@ -92,6 +92,7 @@ head(mtcars_selected)
 
 ```{r}
 mtcars_grouped <- mtcars_selected
+mtcars_grouped |> group_by(cyl) |> summarize(mean_mpg = mean(mpg))
 ```
 
 ### 3. Play with the built-in dataset `iris` to explore the package `ggplot2`. Please set an appropriate plot title and axis titles.
@@ -99,50 +100,66 @@ mtcars_grouped <- mtcars_selected
 #### a. Load the dataset `iris`. Print 1) the first 6 rows of the data, 2) how many observations (rows) and variables (columns) are in the dataset, 3) the names of all variables.
 
 ```{r}
+data(iris)
+head(iris)
 
+dim(iris)
 
+names(iris)
 ```
 
 #### b. Create a scatter plot to visualize the relationship between `Sepal.Length` (x-axis) and `Sepal.Width` (y-axis).
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point() +
+  ggtitle("Relationship between Sepal Length and Sepal Width") +
+  labs(x = "Sepal Length (cm)", y = "Sepal Width (cm)")
 ```
 
 #### c. Create a scatter plot to visualize the relationship between `Petal.Length` and `Petal.Width`, and color the points by `Species`.
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) +
+  geom_point() +
+  ggtitle("Relationship between Petal Length and Petal Width") +
+  labs(x = "Petal Length (cm)", y = "Petal Width (cm)")
 ```
 
 #### d. Create a boxplot to visualize the distribution of `Petal.Length` of each `Species`.
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Species, y = Petal.Length)) +
+  geom_boxplot() +
+  ggtitle("Distribution of Petal Length by Species") +
+  labs(x = "Species", y = "Petal Length (cm)")
 ```
 
 #### e. Create a histogram to visualize the distribution of `Petal.Width`.
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Petal.Width)) +
+  geom_histogram(binwidth = 0.2) +
+  ggtitle("Distribution of Petal Width") +
+  labs(x = "Petal Width (cm)", y = "Frequency")
 ```
 
 #### f. Create a violin plot to visualize the distribution of `Sepal.Length` by `Species`.
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Species, y = Sepal.Length)) +
+  geom_violin() +
+  ggtitle("Distribution of Sepal Length by Species") +
+  labs(x = "Species", y = "Sepal Length (cm)")
 ```
 
 #### g. Create a density plot to visualize the distribution of `Sepal.Width` by `Species`.
 
 ```{r}
-
-
+ggplot(data = iris, aes(x = Sepal.Width, color = Species)) +
+  geom_density() +
+  ggtitle("Distribution of Sepal Width by Species") +
+  labs(x = "Sepal Width (cm)", y = "Density")
 ```
 
 ### 4. Practice with the real-world dataset `covid_hk_data` ("http://www.chp.gov.hk/files/misc/enhanced_sur_covid_19_eng.csv"). Please use `head()` to show the results if there are too many rows in them.
@@ -150,35 +167,37 @@ mtcars_grouped <- mtcars_selected
 #### a. Load the dataset `covid_hk_data`. Print 1) the first 6 rows of the data, 2) how many observations (rows) and variables (columns) are in the dataset, 3) the names of all variables.
 
 ```{r}
-
-
+covid_hk_data <- read.csv("http://www.chp.gov.hk/files/misc/enhanced_sur_covid_19_eng.csv")
+head(covid_hk_data)
 ```
 
 #### b. Filter the dataset `covid_hk_data` with `Case.status.` equal to `Confirmed`. Please do operations on a dataset copy of `covid_hk_data` named `covid_hk_data_filtered`.
 
 ```{r}
-
-
+covid_hk_data_filtered <- covid_hk_data |> filter(Case.status. == "Confirmed")
+head(covid_hk_data_filtered)
 ```
 
 #### c. Group the dataset `covid_hk_data_filtered` by `Report.date`, and calculate the total number of confirmed cases each day (`total_confirmed`). Please do operations on a dataset copy of `covid_hk_data_filtered` named `covid_hk_data_grouped`.
 
 ```{r}
-
-
+covid_hk_data_grouped <- covid_hk_data_filtered |> group_by(Report.date) |> summarize(total_confirmed = sum(Case.status. == "Confirmed"))
+head(covid_hk_data_grouped)
 ```
 
 #### d. Add a new column `date` with the standard date format "YYYY-MM-DD" to the `covid_hk_data_grouped` dataset according to the `Report.date` column. Be reminded the format of `Report.date` is "DD/MM/YYYY". 
 
 ```{r}
-
-
+covid_hk_data_grouped <- covid_hk_data_grouped |> mutate(date=as.Date(as.character(Report.date), "%d/%m/%Y"))
+head(covid_hk_data_grouped)
 ```
 
 #### e. Use `ggplot2` to visualize the total number of confirmed cases over date with `covid_hk_data_grouped` dataset.
 
 ```{r}
-
-
+ggplot(covid_hk_data_grouped, aes(x = date, y = total_confirmed)) + 
+  geom_line() + 
+  ggtitle("Total number of confirmed cases in Hong Kong") + 
+  labs(x = "Date", y = "Confirmed Cases")
 ```
 
