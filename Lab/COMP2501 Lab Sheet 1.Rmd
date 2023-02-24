@@ -51,43 +51,47 @@ compute_s_n(100)
 #### a. Load the dataset `mtcars`. Print 1) the first 6 rows of the data, 2) how many observations (rows) and variables (columns) are in the dataset, 3) the names of all variables.
 
 ```{r}
+data(mtcars)
+head(mtcars)
 
+dim(mtcars)
 
+names(mtcars)
 ```
 
 #### b. Create a new variable `performance` as the ratio of horsepower (`hp`) to weight (`wt`) (i.e. $perfomance = hp/wt$). Please do operations on a dataset copy of `mtcars` named `mtcars_modified`.
 
 ```{r}
-
-
+mtcars_modified <- mtcars |> mutate(performance = hp / wt)
+head(mtcars_modified)
 ```
 
 #### c. 1) Use `top_n()` function to find out the top 1 observation in `mtcars_modified` with the highest value of `performance`, 2) Sort the `mtcars_modified` by `performance` in descending order. Check if the result in 1) is the first row of the results in 2).
 
 ```{r}
+top_n(mtcars_modified, 1, performance)
 
-
+mtcars_modified |> arrange(desc(performance)) |> head()
 ```
 
 #### d. Filter the original dataset `mtcars` to show only the cars with a mpg value greater than 20. Please do operations on a dataset copy of `mtcars` named `mtcars_filtered`.
 
 ```{r}
-
-
+mtcars_filtered <- mtcars |> filter(mpg > 20)
+head(mtcars_filtered)
 ```
 
 #### e. Select only the `mpg` and `cyl` columns from the filtered dataset `mtcars_filtered`. Please do operations on a dataset copy of `mtcars_filtered` named `mtcars_selected`.
 
 ```{r}
-
-
+mtcars_selected <- mtcars_filtered |> select(mpg, cyl)
+head(mtcars_selected)
 ```
 
 #### f. Group the dataset `mtcars_selected` by `cyl` and summarize the mean mpg for each group. Please do operations on a dataset copy of `mtcars_selected` named `mtcars_grouped`.
 
 ```{r}
-
-
+mtcars_grouped <- mtcars_selected
 ```
 
 ### 3. Play with the built-in dataset `iris` to explore the package `ggplot2`. Please set an appropriate plot title and axis titles.
