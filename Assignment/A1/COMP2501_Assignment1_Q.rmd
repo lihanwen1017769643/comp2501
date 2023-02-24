@@ -139,6 +139,14 @@ ggplot(data = murders, aes(x = population, y = total)) +
   geom_text(aes(label = state), cex = 3) +
   labs(x = "population", y = "total number of murders")
 
+library(ggrepel)
+options(ggrepel.max.overlaps = Inf)
+ggplot(data = murders, aes(x = population, y = total, label = state)) +
+  geom_point(size = 1) +
+  geom_text_repel() +
+  ggtitle("Relationship between total number of murders and population") +
+  labs(x = "population", y = "total number of murders")
+
 ```
 
 
