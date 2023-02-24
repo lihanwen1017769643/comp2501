@@ -59,7 +59,8 @@ head(murders, 2)
 ### 1. (1 points) Given matrix `mat`, print the entries of row 2, and columns 2 to 4.
 
 ```{r}
-# mat[2, 2:4]
+mat <- matrix(1:16, nrow = 4)
+mat[2, 2:4]
 
 ```
 
@@ -78,7 +79,9 @@ print(compute_s_n(500))
 ### 3. (2 points) Compute the murder rate per 100,000 people for each state and store it in an object called murder_rate. Then use logical operators to find which state has a murder rate per 100,000 people higher than 5. Find these states, print their names and murder rate per 100,000 people.
 
 ```{r}
-
+murder_rate <- murders |> group_by(state) |> summarize(murder.rate = sum(total) / sum(population) * 100000)
+murder_rate_filtered = murder_rate |> filter(murder.rate > 5)
+murder_rate_filtered
 
 ```
 
@@ -86,7 +89,14 @@ print(compute_s_n(500))
 ### 4. (2 points) For all states having a murder rate per 100,000 people higher than 5, use the barplot function to create a barplot with the x-axis being the state name, and the y-axis being the murder rate per 100,000 people of each state. (Hint: check some barplot examples at https://r-graph-gallery.com/210-custom-barplot-layout.html)
 
 ```{r}
-
+barplot(
+  height = murder_rate_filtered$murder.rate, 
+  names.arg = murder_rate_filtered$state,
+  ylim = c(0,20),
+  xlab = "State",
+  ylab = "Murder Rate",
+  main = "Murder Rate by State"
+)
 
 ```
 
@@ -97,13 +107,15 @@ print(compute_s_n(500))
 - c.	Orange is not tidy: it is a matrix instead of a data frame.
 - d.	Orange is tidy data: all small datasets are tidy by definition.
 
-Your answer is: [Input here]
+Your answer is: [a]
 
 
 ### 6. (3 points) Base on the `murders` dataset, create a table called `my_states` that contains rows for states satisfying two conditions: 1) it is in either West or South, and 2) the murder rate per 100,000 people is less than 2.0. Use `select` to show only the state name, the region and the murder rate, and use top_n function to find the 3 safest states among them.
 
 ```{r}
-
+my_states = murders |> mutate(murder.rate = total * 100000 / population)
+my_states = my_states |> filter(region %in% c("West", "East"), murder.rate < 2.0) |> select(state, region, murder.rate)
+top_n(my_states, -3, murder.rate)
 
 ```
 
@@ -111,7 +123,8 @@ Your answer is: [Input here]
 ### 7. (2 points) By using the murders dataset, compute the average murder rate per 100,000 people in the four regions respectively of the U.S., and sort the results by murder rate in ascending order.
 
 ```{r}
-
+murders_group = murders |> group_by(region) |> summarize(avg_murder_rate = sum(total) / sum(population) * 100000) |> arrange(avg_murder_rate)
+murders_group
 
 ```
 
@@ -119,7 +132,12 @@ Your answer is: [Input here]
 ### 8. (3 points) Use the ggplot2 package to create a scatterplot from the murders dataset, where the x-axis is the number of population, the y-axis is the total number of murders, and each point in the scatterplot is labeled with the state name. Please add an appropriate title, and axis labels to the plot.
 
 ```{r}
-
+library(ggplot2)
+ggplot(data = murders, aes(x = population, y = total)) +
+  geom_point(size = 1) +
+  ggtitle("Relationship between total number of murders and population") +
+  geom_text(aes(label = state), cex = 3) +
+  labs(x = "population", y = "total number of murders")
 
 ```
 
@@ -136,7 +154,9 @@ library(ggplot2)
 #### a. (2 points) Read the CSV formatted dataset. Find out how many observations (rows) and variables (columns) are in the dataset. Print the names of all variables.
 
 ```{r}
-
+df = read.csv("http://www.bio8.cs.hku.hk/comp2501/covid.csv")
+dim(df)
+names(df)
 
 ```
 
@@ -144,7 +164,8 @@ library(ggplot2)
 #### b. (1 points) List the observation with the largest `Cumulative_number_for_14_days_of_COVID.19_cases_per_100000`.
 
 ```{r}
-
+top_n(df, 1, Cumulative_number_for_14_days_of_COVID.19_cases_per_100000)
+# df |> arrange(desc(Cumulative_number_for_14_days_of_COVID.19_cases_per_100000)) |> head(1)
 
 ```
 
@@ -152,7 +173,8 @@ library(ggplot2)
 #### c. (2 points) How many unique `countriesAndTerritories` are in the dataset? How many unique `continentExp` are in the dataset?
 
 ```{r}
-
+length(unique(df$countriesAndTerritories))
+length(unique(df$continentExp))
 
 ```
 
@@ -160,7 +182,11 @@ library(ggplot2)
 #### d. (3 points) For 1) the whole dataset, 2) different `countriesAndTerritories`, and 3) different `continentExp`, compute both i) the sum of cases, and ii) the sum of deaths. Sort the results by the sum of cases descendingly. Use head() if there are too many rows in the results. 
 
 ```{r}
+df |> summarize(case_sum = sum(cases), death_sum = sum(deaths)) |> head()
 
+df |> group_by(countriesAndTerritories) |> summarize(case_sum = sum(cases), death_sum = sum(deaths)) |> arrange(desc(case_sum)) |> head()
+
+df |> group_by(continentExp) |> summarize(case_sum = sum(cases), death_sum = sum(deaths)) |> arrange(desc(case_sum)) |> head()
 
 ```
 
@@ -168,7 +194,8 @@ library(ggplot2)
 #### e. (2 points) Add a new column `date` with the standard date format "YYYY-MM-DD" to the data table according to the `dateRep` column. Be reminded the format of `dateRep` is "DD/MM/YYYY". Please use head() to show the result.
 
 ```{r}
-
+df = df |> mutate(date = as.Date(as.character(dateRep), "%d/%m/%Y"))
+df |> head()
 
 ```
 
@@ -176,7 +203,10 @@ library(ggplot2)
 #### f. (1 points) Create a scatterplot showing `cases` vs. `deaths`. Set an appropriate plot title and axis titles.
 
 ```{r}
-
+ggplot(data = df, aes(x = cases, y = deaths)) +
+  geom_point() +
+  ggtitle("Relationship between cases and deaths") +
+  labs(x = "cases", y = "deaths")
 
 ```
 
@@ -184,7 +214,11 @@ library(ggplot2)
 #### g. (2 points) Create a line plot using data with `countriesAndTerritories=="China"`, showing date on the x-axis and cases per day on the y-axis. Set an appropriate plot title and axis titles.
 
 ```{r}
-
+df_china = df |> filter(countriesAndTerritories=="China")
+ggplot(data = df_china, aes(x = date, y = cases)) +
+  geom_line() +
+  ggtitle("Cases in China by date") +
+  labs(x = "date", y = "cases")
 
 ```
 
@@ -192,7 +226,11 @@ library(ggplot2)
 #### h. (2 points) Similar to above, create a line plot using the data of six countries including "China", "United_States_of_America", "United_Kingdom", "France", "Germany", and "Italy". Use different line colors for each country. Set an appropriate plot title and axis titles.
 
 ```{r}
-
+df_sub = df |> filter(countriesAndTerritories %in% c("China", "United_States_of_America", "United_Kingdom", "France", "Germany", "Italy"))
+ggplot(data = df_sub, aes(x = date, y = cases)) +
+  geom_line(aes(color = countriesAndTerritories)) +
+  ggtitle("Cases in six countries") +
+  labs(x = "date", y = "cases", color = "Countries")
 
 ```
 
@@ -200,6 +238,11 @@ library(ggplot2)
 #### i. (2 points) Similar to question h, create a boxplot instead.
 
 ```{r}
-
+df_sub = df |> filter(countriesAndTerritories %in% c("China", "United_States_of_America", "United_Kingdom", "France", "Germany", "Italy"))
+ggplot(data = df_sub, aes(x = countriesAndTerritories, y = cases)) +
+  geom_boxplot(aes(color = countriesAndTerritories)) +
+  ggtitle("Cases in six countries") +
+  labs(x = "country", y = "cases", color = "Countries") +
+  theme(axis.text.x = element_text(angle = 30, vjust = .8))
 
 ```
