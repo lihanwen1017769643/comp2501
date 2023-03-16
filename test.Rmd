@@ -54,12 +54,53 @@ geom_point(aes(x=population/10^6, total)) +
 geom_text(aes(x=population/10^6, y=total, label=abb))
 ```
 
+```{r}
+library(dslabs)
+data(murders)
+library(tidyverse)
+library(ggplot2)
+```
 
+```{r}
+murders |> mutate(murder_rate = total / population * 100000) |>
+  mutate(state = reorder(state, murder_rate)) |>
+  ggplot(aes(state, murder_rate)) +
+  # geom_bar(stat = "identity") +
+  geom_col() +
+  coord_flip() +
+  theme(axis.text.y = element_text(size = 6)) + 
+  xlab("")
+```
 
+```{r}
+library(tidyverse)
+library(dslabs)
+path <- system.file("extdata", package = "dslabs")
+filename <- file.path(path, "fertility-two-countries-example.csv")
+wide_data <- read_csv(filename)
+```
 
+```{r}
+new_tidy_data = pivot_longer(wide_data, `1960`:`2015`, names_to = "year", values_to = "fertility")
+new_tidy_data
+```
 
+```{r}
+url <- paste0("https://en.wikipedia.org/w/index.php?title=", "Gun_violence_in_the_United_States_by_state", "&direction=prev&oldid=810166167")
+library(rvest)
+h <- read_html(url)
+```
 
+```{r}
+tab <- h |> html_nodes("table")
+tab
+```
 
+```{r}
+murders <- tab[[1]] |> html_table() |>
+  setNames(c("state", "population", "total", "murder_rate"))
+murders |> head()
+```
 
 
 
