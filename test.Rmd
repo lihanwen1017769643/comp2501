@@ -21,10 +21,19 @@ summary(cars)
 
 ## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+library(dslabs)
+library(tidyverse)
+library(ggplot2)
+library(datasets)
+library(tidyr)
+library(dplyr)
+library(rvest)
+library(stringr)
+library(lubridate)
+library(gutenbergr)
+library(tidytext)
+library(textdata)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
@@ -101,10 +110,5 @@ murders <- tab[[1]] |> html_table() |>
   setNames(c("state", "population", "total", "murder_rate"))
 murders |> head()
 ```
-
-
-
-
-
 
 
