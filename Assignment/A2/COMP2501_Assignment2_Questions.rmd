@@ -174,9 +174,14 @@ text3 |> str_replace_all(p3, "URL")
 
 ```{r}
 library(lubridate)
+library(hms)
 
 date_data <- data.frame(date_time = c("2023-02-22 7:30:15", "2023-02-23 12:15:30", "2023-02-24 23:59:59"))
-
+date_data$date_time <- ymd_hms(date_data$date_time)
+date_data <- date_data |> 
+  mutate(date = as_date(date_data$date_time)) |> 
+  mutate(time = as_hms(date_data$date_time))
+date_data
 
 ```
 
@@ -186,28 +191,53 @@ date_data <- data.frame(date_time = c("2023-02-22 7:30:15", "2023-02-23 12:15:30
 
 ```{r}
 library(gutenbergr)
-
+books <- gutenberg_metadata
+head(books)
+dim(books)
+names(books)
 
 ```
 
 #### b. (2 points) Remove any rows in `books` that have missing values in the `author` column, and then count the number of books for each author in a descending order. Who has the most publications and what's the exact numer (ignoring `Various` and `Anonymous` as an author name)?
 
 ```{r}
-
+books <- books |> drop_na(author)
+# books[complete.cases(books$author), ]
+# books[!is.na(books$author), ]
+books_summary <- books |> 
+  filter(!(author %in% c("Various", "Anonymous"))) |> 
+  group_by(author) |> 
+  summarize(count = n()) |>
+  arrange(desc(count))
+books_summary |> head()
+books_summary |> top_n(1)
 
 ```
 
 #### c. (2 points) Create a subset of `books` with only `Shakespeare, William`'s English publications, named `shakespeare_books`. Print the first 6 rows in `shakespeare_books`.
 
 ```{r}
-
+shakespeare_books <- books |> filter(author == "Shakespeare, William" & language == "en")
+shakespeare_books |> head()
 
 ```
 
 #### d. (4 points) Filter the dataset `shakespeare_books` to only include specifically the book `Hamlet` as `shakespeare_hamlet`, and extract only `gutenberg_id`, `title` and `author` columns to save, and if there are more that one observation in `shakespeare_hamlet`, just preserve the first observation with `slice()`. Then use `gutenberg_download()` to download the corresponding texts according to `shakespeare_hamlet$gutenberg_id` as `hamlet_text`. Lastly join `shakespeare_hamlet` and `hamlet_text` with `left_join()` as `hamlet_data`, and remove any missing values in the `text` column as well as convert the `text` column to lowercase.
 
 ```{r}
-
+empty_is_na <- TRUE
+shakespeare_hamlet <- shakespeare_books |> 
+  filter(title == "Hamlet") |>
+  select(gutenberg_id, title, author) |>
+  slice_head(n = 1)
+hamlet_text <- shakespeare_hamlet$gutenberg_id |> gutenberg_download()
+hamlet_data <- left_join(shakespeare_hamlet, hamlet_text)
+if(empty_is_na){
+  hamlet_data$text <- str_trim(hamlet_data$text)
+  hamlet_data <- hamlet_data |> filter(hamlet_data$text != "")
+}
+hamlet_data$text <- str_to_lower(hamlet_data$text)
+hamlet_data
 
 ```
 
@@ -217,6 +247,16 @@ library(gutenbergr)
 library(tidytext)
 library(textdata)
 
+hamlet_sentiments <- get_sentiments("afinn")
+hamlet_words <- hamlet_data |> 
+  unnest_tokens(word, text) |>
+  anti_join(stop_words, by = "word") |>
+  inner_join(hamlet_sentiments, by = "word") |>
+  group_by(word, value) |>
+  summarize(n = n()) |>
+  arrange(desc(value))
+hamlet_words <- hamlet_words[, c(1, 3, 2)]
+hamlet_words
 
 ```
 
@@ -225,5 +265,24 @@ library(textdata)
 ```{r}
 library(ggplot2)
 
+hamlet_top_words <-
+  hamlet_words |>
+  group_by(value) |>
+  # filter(row_number() == 1) |>
+  top_n(n = 1, wt = n) |>
+  arrange(desc(n))
+hamlet_top_words |>
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab("word") +
+  ylab("count") +
+  ggtitle("Bar plot of top 1 most common words for each value")
+# hamlet_top_words_pos <- hamlet_top_words |> filter(value > 0) |> arrange(desc(n)) |> head(1)
+# hamlet_top_words_neg <- hamlet_top_words |> filter(value < 0) |> arrange(desc(n)) |> head(1)
+# bind_rows(hamlet_top_words_pos, hamlet_top_words_neg) |> 
+#   ggplot(aes(word, n)) +
+#   geom_col() +
+#   xlab("word") +
+#   ggtitle("Bar plot of top 1 most common positive and negative words")
 
 ```
