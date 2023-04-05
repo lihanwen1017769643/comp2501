@@ -5,7 +5,7 @@ This dataset contains 100 most streamed songs on *Spotify* with their features e
 
 ### Data preprocessing
 Before I conduct some exploratory data analysis on the data, I need to first preprocess it, which removes missing or inconsistent data values resulting from human or computer error. Thus, it can improve the accuracy and reliability of the data.
-Firstly, as there are two files given as dataset, we need first to merge them to form a single table for better analysis afterwards. Also, the olumn `Release Date` is represented with both numbers and characters, which makes it difficult to take comparisons and numerical calculations. Thus, I need to convert it to another data type, i.e., `Date`. Furthermore, since there is no missing data, we will not drop any observations.
+Firstly, as there are two files given as dataset, we need first to merge them to form a single table for better analysis afterwards. Also, the column `Release Date` is represented with both numbers and characters, which makes it difficult to take comparisons and numerical calculations. Thus, I need to convert it to another data type, i.e., `Date`. Furthermore, since there is no missing data, we will not drop any observations.
 
 ### Interested questions
 The profit development trend of the music industry has changed significantly in recent years, mainly due to the influence of digital technology and the internet.
@@ -16,7 +16,7 @@ From this dataset, I am curious about some basic information about these top son
 - What is the newest song and the oldest song respectively in the list?
 - Which year did the most number of songs released on the list?
 
-To go deeper, I am also intereseted in some intrinsic links among different varibles, including but not limited to the following tasks:
+To go deeper, I am also interested in some intrinsic links among different varibles, including but not limited to the following tasks:
 - Is there a pattern in terms of `key` and `mode` for these top songs?
 - Do these songs gravitate around an `tempo`?
 - Do these songs gravitate around an `optimal duration`?
